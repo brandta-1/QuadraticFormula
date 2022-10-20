@@ -60,7 +60,7 @@
 
         
         function prntAns(a,b,c,xs){
-            //notice that you can have a function take an element id as a string from another function (see line 87)
+            //notice that you can have a function take an element id as a string from another function (see line 92)
             document.getElementById(String(xs)).innerHTML = "\\(x = {-("+b+") \\pm \\sqrt{("+b+")^2-4("+a+")("+c+")} \\over 2("+a+")}\\)";
             MathJax.typeset();
         }
@@ -81,6 +81,11 @@
             var inputs = document.getElementsByTagName("input");
 
             var a = inputs[0].value;
+            if(a==0){
+                document.getElementById("xs1").innerHTML = "The formula is no longer quadratic if \\(a = 0\\) :)"; 
+                MathJax.typeset();
+                return;
+            }
             var b = inputs[1].value;
             var c = inputs[2].value;
 
