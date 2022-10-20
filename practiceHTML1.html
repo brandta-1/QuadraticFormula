@@ -58,14 +58,14 @@
 
     <script>
 
-        
-        function prntAns(a,b,c,xs){
-            //notice that you can have a function take an element id as a string from another function (see line 92)
-            document.getElementById(String(xs)).innerHTML = "\\(x = {-("+b+") \\pm \\sqrt{("+b+")^2-4("+a+")("+c+")} \\over 2("+a+")}\\)";
-            MathJax.typeset();
+        //loads all page element ids into an array. Theres probably a simpler way to do this. Cutting an html collection into an array of its own ids with a for loop feels redundant
+        const id = document.getElementsByTagName("h3");
+        const ids = [id.length];
+        for(let i=0; i<id.length; i++){
+            ids[i]=id[i].id;
         }
-
-        //recursive euclidean algorithm, finds the largest integer that divides a and b
+        
+        //recursive euclidean algorithm, finds the largest integer that divides a and b, used to display fractions
         function gcd(a, b){
             if(a==0){ 
                 return b;
@@ -76,44 +76,60 @@
             return gcd(b, a % b);
         }
 
+        //this function makes all page elements beneath the button empty
+        function clearPage(xs){
+            document.getElementById(String(xs)).innerHTML = "";
+        }
+
         function quadform(){
 
+            //make the page's answer section blank before writing any answers down
+            ids.forEach(clearPage);
+            
+            //get user input and verify quadratic
             var inputs = document.getElementsByTagName("input");
-
             var a = inputs[0].value;
             if(a==0){
-                document.getElementById("xs1").innerHTML = "The formula is no longer quadratic if \\(a = 0\\) :)"; 
+                document.getElementById("xs1").innerHTML = "The formula is not quadratic if \\(a = 0\\) :)"; 
                 MathJax.typeset();
                 return;
             }
             var b = inputs[1].value;
             var c = inputs[2].value;
 
-            prntAns(a,b,c,"xs1");
+            //display user's input
+            document.getElementById("xs1").innerHTML = "\\(x = {-("+b+") \\pm \\sqrt{("+b+")^2-4("+a+")("+c+")} \\over 2("+a+")}\\)";
 
+            //simplify input and display
             var x1 = Math.pow(b,2) - 4*a*c;
             a=2*a;
-
             document.getElementById("xs2").innerHTML = "\\(x = {-("+b+") \\pm \\sqrt{"+x1+"} \\over "+a+"}\\)";
 
+            //if no real solution
             if(x1<0){
+
+
                 document.getElementById("xs3").innerHTML = "No real solution. Complex conjugate:";
+
+                //distribute i out of square, round square
                 x1=-1*x1;
                 x1 = Math.sqrt(x1);
-                document.getElementById("xs4").innerHTML = "\\(x = {-\\left("+b+" \\over "+a+"\\right)} \\pm {("+x1.toFixed(3)+")i \\over "+a+"}\\)";
                 x1=(x1.toFixed(3));
+                //display complex equation
+                document.getElementById("xs4").innerHTML = "\\(x = {-\\left("+b+" \\over "+a+"\\right)} \\pm {("+x1+")i \\over "+a+"}\\)";
+                
+                //convert numerator and denominator into integers
                 x1=x1*Math.pow(10,3);
-                console.log(x1);
                 a=a*Math.pow(10,3);
-                console.log(a);
+                //find greatest common denominator
                 var xgcd = gcd(x1,a);
-                console.log(xgcd);
+                //display complex conjugate
                 document.getElementById("xs5").innerHTML = "\\(x = {-\\left("+b+" \\over "+a/Math.pow(10,3)+"\\right)} \\pm {("+x1/xgcd+")i \\over "+a/xgcd+"}\\)";
                 MathJax.typeset();
                 return;
             }
             
-            document.getElementById("xs5").innerHTML ="";
+        
             x1 = Math.sqrt(x1);
             document.getElementById("xs3").innerHTML = "\\(x = {-("+b+") \\over "+a+"} \\pm {("+x1.toFixed(3)+") \\over "+a+"}\\)";
             var x2 = -1*b + x1;
